@@ -43,10 +43,11 @@ class AttendanceController {
         });
       }
 
-      // Check time window
+      // Check time window using proper string comparison (HH:MM:SS format)
       const now = new Date();
-      const currentTime = now.toTimeString().split(' ')[0];
-      if (currentTime < lecture.attendance_window_start || currentTime > lecture.attendance_window_end) {
+      const currentTimeStr = now.toTimeString().split(' ')[0];
+      
+      if (currentTimeStr < lecture.attendance_window_start || currentTimeStr > lecture.attendance_window_end) {
         // Mark as absent - outside attendance window
         const attendance = await Attendance.markAttendance(
           lectureId,
@@ -64,15 +65,15 @@ class AttendanceController {
       // Check geo-radius
       const { isWithinRadius, calculateDistance } = require('../utils/distance');
       const distance = calculateDistance(
-        lecture.geo_latitude,
-        lecture.geo_longitude,
+        parseFloat(lecture.geo_latitude),
+        parseFloat(lecture.geo_longitude),
         latitude,
         longitude
       );
 
       const withinRadius = isWithinRadius(
-        lecture.geo_latitude,
-        lecture.geo_longitude,
+        parseFloat(lecture.geo_latitude),
+        parseFloat(lecture.geo_longitude),
         latitude,
         longitude,
         lecture.geo_radius

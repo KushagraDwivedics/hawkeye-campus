@@ -59,6 +59,7 @@ class StudentController {
           student: {
             fullName: student.full_name,
             rollNumber: student.roll_number,
+            email: student.email,
             department: student.department_name,
             section: student.section_name
           },
@@ -99,7 +100,7 @@ class StudentController {
         data: {
           id: student.id,
           fullName: student.full_name,
-          email: student.user_id, // You'll need to join users table
+          email: student.email,
           rollNumber: student.roll_number,
           department: student.department_name,
           section: student.section_name,
@@ -191,11 +192,11 @@ class StudentController {
         });
       }
 
-      // Check if current time is within attendance window
+      // Check if current time is within attendance window using proper time comparison
       const now = new Date();
-      const currentTime = now.toTimeString().split(' ')[0];
+      const currentTimeStr = now.toTimeString().split(' ')[0];
       
-      if (currentTime < lecture.attendance_window_start || currentTime > lecture.attendance_window_end) {
+      if (currentTimeStr < lecture.attendance_window_start || currentTimeStr > lecture.attendance_window_end) {
         return res.status(400).json({
           success: false,
           message: 'Attendance window is closed'
@@ -205,15 +206,15 @@ class StudentController {
       // Calculate distance using Haversine formula
       const { isWithinRadius, calculateDistance } = require('../utils/distance');
       const distance = calculateDistance(
-        lecture.geo_latitude,
-        lecture.geo_longitude,
+        parseFloat(lecture.geo_latitude),
+        parseFloat(lecture.geo_longitude),
         latitude,
         longitude
       );
 
       const withinRadius = isWithinRadius(
-        lecture.geo_latitude,
-        lecture.geo_longitude,
+        parseFloat(lecture.geo_latitude),
+        parseFloat(lecture.geo_longitude),
         latitude,
         longitude,
         lecture.geo_radius

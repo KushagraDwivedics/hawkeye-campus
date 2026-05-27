@@ -20,9 +20,10 @@ class Faculty {
 
   static async findByUserId(userId) {
     const query = `
-      SELECT f.*, d.name as department_name
+      SELECT f.*, d.name as department_name, u.email
       FROM faculty f
       JOIN departments d ON f.department_id = d.id
+      JOIN users u ON f.user_id = u.id
       WHERE f.user_id = $1
     `;
     const result = await db.query(query, [userId]);
@@ -31,9 +32,10 @@ class Faculty {
 
   static async findByFacultyCode(facultyCode) {
     const query = `
-      SELECT f.*, d.name as department_name
+      SELECT f.*, d.name as department_name, u.email
       FROM faculty f
       JOIN departments d ON f.department_id = d.id
+      JOIN users u ON f.user_id = u.id
       WHERE f.faculty_code = $1
     `;
     const result = await db.query(query, [facultyCode]);
