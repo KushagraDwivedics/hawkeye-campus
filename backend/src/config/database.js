@@ -13,12 +13,28 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000,
 });
 
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
+// Handle connection errors
+pool.on('error', (err, client) => {
+  console.error('❌ Unexpected error on idle client:', err);
+  process.exit(-1);
 });
 
+// Log successful connections
 pool.on('connect', () => {
   console.log('📡 New database connection established');
+});
+
+// Log connection releases
+pool.on('release', () => {
+  // Silently release connections
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('\n🛑 Shutting down database connections...');
+  await pool.end();
+  console.log('✅ Database connections closed');
+  process.exit(0);
 });
 
 module.exports = pool;
